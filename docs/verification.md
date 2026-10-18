@@ -17,13 +17,16 @@ Independent verification must run against the exact commit named below.
 
 - Code commit: `eb662ecd3196a20a3a79847e3620d74642bc8d66`
   (`feat: read-only audit CLI for agent daemons, auto-update, telemetry`).
-- The only change after that commit is this evidence document, committed as a
-  docs-only follow-up. The source, tests, fixtures and examples under test are
-  exactly `eb662ec`.
-- Reproduce everything below from a clean checkout of that commit:
+- Follow-up evidence commit: `cec6069328340d3148cbc05b4dfad1fc78a755fc`
+  (`docs: record verification evidence and harden read-only proof`) — docs,
+  frozen example timestamps, and the two dev scripts only.
+- Shipped CLI code (`src/`, `bin/`), tests and fixtures are identical in both.
+  QA should verify the final HEAD and treat any later docs-only commit as
+  documentation, not behaviour.
+- Reproduce everything below from a clean checkout:
 
 ```bash
-git checkout eb662ecd3196a20a3a79847e3620d74642bc8d66
+git checkout cec6069328340d3148cbc05b4dfad1fc78a755fc
 node --test
 node scripts/verify-local.js
 node scripts/gen-examples.js
