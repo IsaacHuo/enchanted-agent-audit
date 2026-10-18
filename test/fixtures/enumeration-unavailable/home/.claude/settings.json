@@ -1,0 +1,4 @@
+{
+  "CLAUDE_CODE_OAUTH_TOKEN": "fixture-must-never-appear-in-output",
+  "anthropic_api_key": "fixture-must-never-appear-in-output"
+}

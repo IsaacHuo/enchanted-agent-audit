@@ -1,0 +1,897 @@
+{
+  "schema": "enchanted.agent-audit/v1",
+  "tool": {
+    "name": "enchanted-agent-audit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-10-18T14:12:48.628Z",
+  "host": {
+    "platform": "linux",
+    "release": "6.8.0-fixture",
+    "arch": "x64",
+    "fixture": "clean-linux",
+    "pathMode": "home-relative"
+  },
+  "platformCapabilities": {
+    "processes": {
+      "available": true,
+      "method": "process-enum",
+      "reason": null
+    },
+    "services": {
+      "available": true,
+      "method": "service-enum",
+      "reason": null,
+      "stateAvailable": true
+    },
+    "scheduledTasks": {
+      "available": true,
+      "method": "scheduled-task-enum",
+      "reason": null
+    },
+    "autostart": {
+      "available": false,
+      "method": "registry-read",
+      "reason": "fixture declares autostart unavailable"
+    },
+    "launchd": {
+      "available": false,
+      "method": "dir-enum",
+      "reason": "fixture declares launchd unavailable"
+    }
+  },
+  "installEnumeration": {
+    "npmGlobalRoot": null,
+    "npmGlobalRootSource": "fixture",
+    "note": "Used only to tell package-manager installs apart from side-loaded copies of the same agent."
+  },
+  "agents": [
+    {
+      "id": "codex",
+      "name": "Codex CLI",
+      "vendor": "OpenAI",
+      "homepage": "https://github.com/openai/codex",
+      "installed": false,
+      "evidenceLevel": "absent",
+      "detection": {
+        "configDirPresent": false,
+        "binaryPath": null,
+        "signals": []
+      },
+      "daemons": {
+        "persistenceDetected": {
+          "value": false,
+          "confidence": "observed",
+          "method": "service-enum",
+          "evidence": [],
+          "note": "enumeration succeeded and no matching persistent entry was found"
+        },
+        "entries": [],
+        "documented": {
+          "summary": "Since 0.157.0 Codex starts a persistent, self-updating background daemon by default; daemon_auto_start is not opt-in.",
+          "switches": [
+            {
+              "value": {
+                "name": "--no-daemon",
+                "kind": "flag",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "codexDaemonIssue",
+                  "url": "https://github.com/openai/codex/issues/48195",
+                  "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+                },
+                {
+                  "key": "codexWindowsFlashes",
+                  "url": "https://github.com/openai/codex/issues/48074",
+                  "title": "Windows regressions caused by the default daemon"
+                }
+              ],
+              "note": "Documented CLI escape hatch; verified to exist, effect not verified by this tool."
+            },
+            {
+              "value": {
+                "name": "daemon_auto_start = false",
+                "kind": "config",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "codexDaemonIssue",
+                  "url": "https://github.com/openai/codex/issues/48195",
+                  "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+                },
+                {
+                  "key": "codexWindowsFlashes",
+                  "url": "https://github.com/openai/codex/issues/48074",
+                  "title": "Windows regressions caused by the default daemon"
+                }
+              ],
+              "note": "Reported in config.toml; whether it fully prevents daemon start is not verified here."
+            },
+            {
+              "value": {
+                "name": "codex app-server daemon stop",
+                "kind": "command",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "codexDaemonIssue",
+                  "url": "https://github.com/openai/codex/issues/48195",
+                  "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+                },
+                {
+                  "key": "codexWindowsFlashes",
+                  "url": "https://github.com/openai/codex/issues/48074",
+                  "title": "Windows regressions caused by the default daemon"
+                }
+              ],
+              "note": "Stops a running daemon but does not change the default for new sessions."
+            }
+          ],
+          "sources": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            },
+            {
+              "key": "codexWindowsFlashes",
+              "url": "https://github.com/openai/codex/issues/48074",
+              "title": "Windows regressions caused by the default daemon"
+            }
+          ]
+        },
+        "notes": [
+          "Vendor documentation: a per-platform installer service (systemd / launchd / Windows service)."
+        ]
+      },
+      "autoUpdate": {
+        "status": {
+          "value": "enabled",
+          "confidence": "documented",
+          "method": "external-doc",
+          "evidence": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            },
+            {
+              "key": "codexUpdaterRestart",
+              "url": "https://github.com/openai/codex/issues/51763",
+              "title": "Auto-update restarts the backend mid-session"
+            }
+          ],
+          "note": "vendor default; no explicit local override found in readable config"
+        },
+        "backgroundAutoUpdate": null,
+        "decoupledFromPackageManager": {
+          "value": true,
+          "confidence": "documented",
+          "method": "external-doc",
+          "evidence": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            },
+            {
+              "key": "codexHnThread",
+              "url": "https://news.ycombinator.com/item?id=50060694",
+              "title": "HN discussion: package-manager updates vs a self-updating daemon"
+            }
+          ],
+          "note": "The platform package (~374MB) is copied into ~/.codex/packages and the backend runs from that copy, decoupled from the package manager."
+        },
+        "configuredKeys": [],
+        "installLocations": [
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Local\\OpenAI\\Codex",
+            "kind": "sideloaded",
+            "version": null,
+            "source": "install-glob"
+          },
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Local\\OpenAI\\Codex\\bin\\896a0166b774037a",
+            "kind": "sideloaded",
+            "version": null,
+            "source": "install-glob"
+          },
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Local\\OpenAI\\Codex\\bin\\ce4759538b7f2f1a",
+            "kind": "sideloaded",
+            "version": null,
+            "source": "install-glob"
+          }
+        ],
+        "documented": {
+          "summary": "A detached updater checks 5 minutes after start and hourly thereafter and can restart the backend mid-conversation.",
+          "switches": [],
+          "sources": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            },
+            {
+              "key": "codexUpdaterRestart",
+              "url": "https://github.com/openai/codex/issues/51763",
+              "title": "Auto-update restarts the backend mid-session"
+            }
+          ]
+        }
+      },
+      "telemetry": {
+        "endpoints": [],
+        "otherEndpoints": [],
+        "staticScanHosts": [],
+        "disableSwitches": [],
+        "configSignals": [],
+        "networkTrafficObserved": false,
+        "note": "No network traffic is captured or inspected. Endpoints are configuration/documentation only."
+      },
+      "dangerousDefaults": [
+        {
+          "id": "daemon-inherits-first-session-env",
+          "description": "The daemon pins the first session's proxy/environment variables, so later sessions silently inherit the wrong network configuration.",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            }
+          ]
+        },
+        {
+          "id": "self-upgrading-package-copy",
+          "description": "The backend runs from a user-directory copy that upgrades itself, so the running version drifts from the package-manager version.",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "codexDaemonIssue",
+              "url": "https://github.com/openai/codex/issues/48195",
+              "title": "Codex CLI starts a persistent, self-updating background daemon by default"
+            }
+          ]
+        }
+      ],
+      "configFiles": [
+        {
+          "path": "~\\.codex\\config.toml",
+          "exists": false
+        },
+        {
+          "path": "~\\.codex\\.codex-global-state.json",
+          "exists": false
+        }
+      ],
+      "limitations": [
+        "Full Windows service enumeration needs elevation; this tool reads START type from the registry and queries only matched services by name, so live state is available for matched services but an unreadable service is reported unknown."
+      ]
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "vendor": "Anthropic",
+      "homepage": "https://github.com/anthropics/claude-code",
+      "installed": false,
+      "evidenceLevel": "absent",
+      "detection": {
+        "configDirPresent": false,
+        "binaryPath": null,
+        "signals": []
+      },
+      "daemons": {
+        "persistenceDetected": {
+          "value": false,
+          "confidence": "observed",
+          "method": "service-enum",
+          "evidence": [],
+          "note": "enumeration succeeded and no matching persistent entry was found"
+        },
+        "entries": [],
+        "documented": {
+          "summary": "Vendor documentation describes auto-update and telemetry but no persistent OS daemon installed by default.",
+          "switches": [],
+          "sources": [
+            {
+              "key": "claudeEnvDocs",
+              "url": "https://code.claude.com/docs/en/env-vars",
+              "title": "Claude Code environment variables reference"
+            }
+          ]
+        },
+        "notes": []
+      },
+      "autoUpdate": {
+        "status": {
+          "value": "enabled",
+          "confidence": "documented",
+          "method": "external-doc",
+          "evidence": [
+            {
+              "key": "claudeUpdaterIssue",
+              "url": "https://github.com/anthropics/claude-code/issues/52192",
+              "title": "DISABLE_AUTOUPDATER is weaker than DISABLE_UPDATES"
+            },
+            {
+              "key": "claudeEnvDocs",
+              "url": "https://code.claude.com/docs/en/env-vars",
+              "title": "Claude Code environment variables reference"
+            }
+          ],
+          "note": "vendor default; no explicit local override found in readable config"
+        },
+        "backgroundAutoUpdate": null,
+        "decoupledFromPackageManager": {
+          "value": null,
+          "confidence": "unknown",
+          "method": "not-observed",
+          "note": "no package-manager install was observed, so decoupling could not be measured"
+        },
+        "configuredKeys": [],
+        "installLocations": [],
+        "documented": {
+          "summary": "Auto-update is on by default through a native updater; DISABLE_AUTOUPDATER=1 is cumulative with, and weaker than, DISABLE_UPDATES=1.",
+          "switches": [
+            {
+              "value": {
+                "name": "DISABLE_AUTOUPDATER=1",
+                "kind": "env",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "claudeUpdaterIssue",
+                  "url": "https://github.com/anthropics/claude-code/issues/52192",
+                  "title": "DISABLE_AUTOUPDATER is weaker than DISABLE_UPDATES"
+                },
+                {
+                  "key": "claudeEnvDocs",
+                  "url": "https://code.claude.com/docs/en/env-vars",
+                  "title": "Claude Code environment variables reference"
+                }
+              ],
+              "note": "Documented but strictly weaker than DISABLE_UPDATES."
+            },
+            {
+              "value": {
+                "name": "DISABLE_UPDATES=1",
+                "kind": "env",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "claudeUpdaterIssue",
+                  "url": "https://github.com/anthropics/claude-code/issues/52192",
+                  "title": "DISABLE_AUTOUPDATER is weaker than DISABLE_UPDATES"
+                },
+                {
+                  "key": "claudeEnvDocs",
+                  "url": "https://code.claude.com/docs/en/env-vars",
+                  "title": "Claude Code environment variables reference"
+                }
+              ],
+              "note": "Blocks all update paths including manual update (v2.1.118+)."
+            },
+            {
+              "value": {
+                "name": "autoUpdatesChannel",
+                "kind": "config",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "claudeUpdaterIssue",
+                  "url": "https://github.com/anthropics/claude-code/issues/52192",
+                  "title": "DISABLE_AUTOUPDATER is weaker than DISABLE_UPDATES"
+                },
+                {
+                  "key": "claudeEnvDocs",
+                  "url": "https://code.claude.com/docs/en/env-vars",
+                  "title": "Claude Code environment variables reference"
+                }
+              ],
+              "note": "Selects latest vs beta channel; does not disable updates."
+            }
+          ],
+          "sources": [
+            {
+              "key": "claudeUpdaterIssue",
+              "url": "https://github.com/anthropics/claude-code/issues/52192",
+              "title": "DISABLE_AUTOUPDATER is weaker than DISABLE_UPDATES"
+            },
+            {
+              "key": "claudeEnvDocs",
+              "url": "https://code.claude.com/docs/en/env-vars",
+              "title": "Claude Code environment variables reference"
+            }
+          ]
+        }
+      },
+      "telemetry": {
+        "endpoints": [],
+        "otherEndpoints": [],
+        "staticScanHosts": [],
+        "disableSwitches": [
+          {
+            "value": {
+              "name": "DISABLE_TELEMETRY=1",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "claudeTelemetryIssue",
+                "url": "https://github.com/anthropics/claude-code/issues/45381",
+                "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+              },
+              {
+                "key": "claudeEnvDocs",
+                "url": "https://code.claude.com/docs/en/env-vars",
+                "title": "Claude Code environment variables reference"
+              }
+            ],
+            "note": "Known to have side effects on unrelated behaviour (#45381). This tool does not verify the switch actually takes effect at runtime."
+          },
+          {
+            "value": {
+              "name": "DO_NOT_TRACK=1",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "claudeTelemetryIssue",
+                "url": "https://github.com/anthropics/claude-code/issues/45381",
+                "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+              },
+              {
+                "key": "claudeEnvDocs",
+                "url": "https://code.claude.com/docs/en/env-vars",
+                "title": "Claude Code environment variables reference"
+              }
+            ],
+            "note": "Community convention honoured by Claude Code. This tool does not verify the switch actually takes effect at runtime."
+          },
+          {
+            "value": {
+              "name": "DISABLE_ERROR_REPORTING=1",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "claudeTelemetryIssue",
+                "url": "https://github.com/anthropics/claude-code/issues/45381",
+                "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+              },
+              {
+                "key": "claudeEnvDocs",
+                "url": "https://code.claude.com/docs/en/env-vars",
+                "title": "Claude Code environment variables reference"
+              }
+            ],
+            "note": "Disables error reporting only. This tool does not verify the switch actually takes effect at runtime."
+          },
+          {
+            "value": {
+              "name": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "claudeTelemetryIssue",
+                "url": "https://github.com/anthropics/claude-code/issues/45381",
+                "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+              },
+              {
+                "key": "claudeEnvDocs",
+                "url": "https://code.claude.com/docs/en/env-vars",
+                "title": "Claude Code environment variables reference"
+              }
+            ],
+            "note": "Disables auto-updates, telemetry, error reporting and release-note checks (v2.1.281+). This tool does not verify the switch actually takes effect at runtime."
+          },
+          {
+            "value": {
+              "name": "CLAUDE_CODE_ENABLE_TELEMETRY=1",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "claudeTelemetryIssue",
+                "url": "https://github.com/anthropics/claude-code/issues/45381",
+                "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+              },
+              {
+                "key": "claudeEnvDocs",
+                "url": "https://code.claude.com/docs/en/env-vars",
+                "title": "Claude Code environment variables reference"
+              }
+            ],
+            "note": "Enables OpenTelemetry export (opposite direction). This tool does not verify the switch actually takes effect at runtime."
+          }
+        ],
+        "configSignals": [],
+        "networkTrafficObserved": false,
+        "note": "No network traffic is captured or inspected. Endpoints are configuration/documentation only."
+      },
+      "dangerousDefaults": [
+        {
+          "id": "telemetry-switch-side-effects",
+          "description": "DISABLE_TELEMETRY also silently disabled the 1-hour prompt cache TTL, so the documented off switch changes unrelated behaviour.",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "claudeTelemetryIssue",
+              "url": "https://github.com/anthropics/claude-code/issues/45381",
+              "title": "DISABLE_TELEMETRY silently broke the 1-hour prompt cache TTL"
+            }
+          ]
+        }
+      ],
+      "configFiles": [
+        {
+          "path": "~\\.claude\\settings.json",
+          "exists": false
+        },
+        {
+          "path": "~\\.claude.json",
+          "exists": false
+        }
+      ],
+      "limitations": [
+        "Vendor telemetry endpoints are not statically verified by this tool; they are reported as unknown unless present in your config or vendor docs."
+      ]
+    },
+    {
+      "id": "copilot-cli",
+      "name": "GitHub Copilot CLI",
+      "vendor": "GitHub",
+      "homepage": "https://github.com/github/copilot-cli",
+      "installed": false,
+      "evidenceLevel": "absent",
+      "detection": {
+        "configDirPresent": false,
+        "binaryPath": null,
+        "signals": []
+      },
+      "daemons": {
+        "persistenceDetected": {
+          "value": false,
+          "confidence": "observed",
+          "method": "service-enum",
+          "evidence": [],
+          "note": "enumeration succeeded and no matching persistent entry was found"
+        },
+        "entries": [],
+        "documented": {
+          "summary": "No persistent OS daemon is documented for Copilot CLI.",
+          "switches": [],
+          "sources": []
+        },
+        "notes": []
+      },
+      "autoUpdate": {
+        "status": {
+          "value": null,
+          "confidence": "unknown",
+          "method": "not-observed",
+          "note": "no explicit auto-update setting found and the vendor default is not documented"
+        },
+        "backgroundAutoUpdate": null,
+        "decoupledFromPackageManager": {
+          "value": null,
+          "confidence": "unknown",
+          "method": "not-observed",
+          "note": "no package-manager install was observed, so decoupling could not be measured"
+        },
+        "configuredKeys": [],
+        "installLocations": [],
+        "documented": {
+          "summary": "Copilot CLI ships an auto-update path; the exact background behaviour is not documented in the cited sources.",
+          "switches": [],
+          "sources": []
+        }
+      },
+      "telemetry": {
+        "endpoints": [],
+        "otherEndpoints": [],
+        "staticScanHosts": [],
+        "disableSwitches": [
+          {
+            "value": {
+              "name": "COPILOT_OFFLINE=true",
+              "kind": "env",
+              "effectVerified": false
+            },
+            "confidence": "documented",
+            "method": "external-doc",
+            "evidence": [
+              {
+                "key": "copilotTelemetryIssue",
+                "url": "https://github.com/github/copilot-cli/issues/3387",
+                "title": "Add option to disable sending usage telemetry"
+              },
+              {
+                "key": "copilotOfflineDocs",
+                "url": "https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/authenticate-copilot-cli",
+                "title": "COPILOT_OFFLINE=true disables telemetry (and also GitHub auth)"
+              }
+            ],
+            "note": "Disables all telemetry, but also GitHub auth; needs a BYOK/local provider. This tool does not verify the switch actually takes effect at runtime."
+          }
+        ],
+        "configSignals": [],
+        "networkTrafficObserved": false,
+        "note": "No network traffic is captured or inspected. Endpoints are configuration/documentation only."
+      },
+      "dangerousDefaults": [
+        {
+          "id": "plaintext-oauth-tokens",
+          "description": "MCP OAuth tokens are written as plaintext JSON under ~/.copilot/mcp-oauth-config/*.tokens.json (existence is reported; contents are never read).",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "copilotPlaintextTokens",
+              "url": "https://github.com/github/copilot-cli/issues/2783",
+              "title": "Copilot CLI writes MCP OAuth tokens in plaintext JSON on disk"
+            }
+          ]
+        },
+        {
+          "id": "desktop-ignores-managed-telemetry-policy",
+          "description": "The desktop client has been reported to ignore enterprise-managed telemetry policy.",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "copilotManagedPolicy",
+              "url": "https://github.com/github/copilot-cli/issues/4782",
+              "title": "Desktop client ignores enterprise-managed telemetry policy"
+            }
+          ]
+        }
+      ],
+      "configFiles": [
+        {
+          "path": "~\\.copilot\\config.json",
+          "exists": false
+        },
+        {
+          "path": "~\\.copilot\\settings.json",
+          "exists": false
+        }
+      ],
+      "limitations": [
+        "Copilot CLI switches are partly undocumented; unverified switches are reported as documented-but-effect-unknown."
+      ]
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "vendor": "OpenCode (anomalyco)",
+      "homepage": "https://github.com/anomalyco/opencode",
+      "installed": false,
+      "evidenceLevel": "absent",
+      "detection": {
+        "configDirPresent": false,
+        "binaryPath": null,
+        "signals": []
+      },
+      "daemons": {
+        "persistenceDetected": {
+          "value": false,
+          "confidence": "observed",
+          "method": "service-enum",
+          "evidence": [],
+          "note": "enumeration succeeded and no matching persistent entry was found"
+        },
+        "entries": [],
+        "documented": {
+          "summary": "OpenCode runs a local server process (opencode serve) and its desktop build ships a local service; no OS-level auto-start daemon is documented.",
+          "switches": [],
+          "sources": [
+            {
+              "key": "opencodeConfigDocs",
+              "url": "https://opencode.ai/docs/config",
+              "title": "OpenCode autoupdate config option"
+            }
+          ]
+        },
+        "notes": [
+          "Vendor documentation: local server process (not an OS service by default)."
+        ]
+      },
+      "autoUpdate": {
+        "status": {
+          "value": "enabled",
+          "confidence": "documented",
+          "method": "external-doc",
+          "evidence": [
+            {
+              "key": "opencodeConfigDocs",
+              "url": "https://opencode.ai/docs/config",
+              "title": "OpenCode autoupdate config option"
+            },
+            {
+              "key": "opencodeAutoupdateEnvBug",
+              "url": "https://github.com/anomalyco/opencode/issues/21083",
+              "title": "autoupdate ignored when set via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR"
+            }
+          ],
+          "note": "vendor default; no explicit local override found in readable config"
+        },
+        "backgroundAutoUpdate": null,
+        "decoupledFromPackageManager": {
+          "value": null,
+          "confidence": "unknown",
+          "method": "not-observed",
+          "note": "no package-manager install was observed, so decoupling could not be measured"
+        },
+        "configuredKeys": [],
+        "installLocations": [
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Local\\Programs\\@opencode-aidesktop",
+            "kind": "sideloaded",
+            "version": null,
+            "source": "install-glob"
+          },
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Roaming\\ai.opencode.desktop",
+            "kind": "sideloaded",
+            "version": null,
+            "source": "install-glob"
+          },
+          {
+            "path": "C:\\Users\\IsaacHuo\\AppData\\Roaming\\ai.opencode.desktop\\cli\\2.0.32-x64",
+            "kind": "sideloaded",
+            "version": "2.0.32-x64",
+            "source": "install-glob"
+          }
+        ],
+        "documented": {
+          "summary": "Auto-update is controlled by the global `autoupdate` config key (true | false | \"notify\"); it does not apply to package-manager installs, and is ignored when set through OPENCODE_CONFIG / OPENCODE_CONFIG_DIR.",
+          "switches": [
+            {
+              "value": {
+                "name": "autoupdate: false",
+                "kind": "config",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "opencodeConfigDocs",
+                  "url": "https://opencode.ai/docs/config",
+                  "title": "OpenCode autoupdate config option"
+                },
+                {
+                  "key": "opencodeAutoupdateEnvBug",
+                  "url": "https://github.com/anomalyco/opencode/issues/21083",
+                  "title": "autoupdate ignored when set via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR"
+                }
+              ],
+              "note": "Global config only; ignored for package-manager installs."
+            },
+            {
+              "value": {
+                "name": "autoupdate: \"notify\"",
+                "kind": "config",
+                "effectVerified": false
+              },
+              "confidence": "documented",
+              "method": "external-doc",
+              "evidence": [
+                {
+                  "key": "opencodeConfigDocs",
+                  "url": "https://opencode.ai/docs/config",
+                  "title": "OpenCode autoupdate config option"
+                },
+                {
+                  "key": "opencodeAutoupdateEnvBug",
+                  "url": "https://github.com/anomalyco/opencode/issues/21083",
+                  "title": "autoupdate ignored when set via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR"
+                }
+              ],
+              "note": "Notify without installing."
+            }
+          ],
+          "sources": [
+            {
+              "key": "opencodeConfigDocs",
+              "url": "https://opencode.ai/docs/config",
+              "title": "OpenCode autoupdate config option"
+            },
+            {
+              "key": "opencodeAutoupdateEnvBug",
+              "url": "https://github.com/anomalyco/opencode/issues/21083",
+              "title": "autoupdate ignored when set via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR"
+            }
+          ]
+        }
+      },
+      "telemetry": {
+        "endpoints": [],
+        "otherEndpoints": [],
+        "staticScanHosts": [],
+        "disableSwitches": [],
+        "configSignals": [],
+        "networkTrafficObserved": false,
+        "note": "No network traffic is captured or inspected. Endpoints are configuration/documentation only."
+      },
+      "dangerousDefaults": [
+        {
+          "id": "autoupdate-env-bypass",
+          "description": "Setting autoupdate via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR is ignored, so a config that looks pinned can still auto-upgrade.",
+          "status": "documented",
+          "sources": [
+            {
+              "key": "opencodeAutoupdateEnvBug",
+              "url": "https://github.com/anomalyco/opencode/issues/21083",
+              "title": "autoupdate ignored when set via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR"
+            }
+          ]
+        }
+      ],
+      "configFiles": [
+        {
+          "path": "~\\.config\\opencode\\opencode.json",
+          "exists": false
+        },
+        {
+          "path": "~\\.config\\opencode\\opencode.jsonc",
+          "exists": false
+        },
+        {
+          "path": "~\\.local\\share\\opencode\\opencode.json",
+          "exists": false
+        }
+      ],
+      "limitations": [
+        "opencode may run several differently-versioned installs side by side; each is reported separately."
+      ]
+    }
+  ],
+  "summary": {
+    "agentsChecked": 4,
+    "installed": [],
+    "tracesOnly": [],
+    "persistentDaemons": [],
+    "backgroundAutoUpdate": []
+  },
+  "ci": {
+    "triggered": false,
+    "reasons": [],
+    "policy": "Non-zero when an observed persistent auto-start daemon or an observed enabled background auto-update is found. Documented-only defaults never fail the gate."
+  }
+}

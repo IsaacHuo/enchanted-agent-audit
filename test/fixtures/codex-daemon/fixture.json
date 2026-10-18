@@ -1,0 +1,39 @@
+{
+  "name": "codex-persistent-daemon",
+  "home": "./home",
+  "env": {
+    "LOCALAPPDATA": "%FIXTURE_HOME%/AppData/Local",
+    "APPDATA": "%FIXTURE_HOME%/AppData/Roaming",
+    "PROGRAMDATA": "%FIXTURE_HOME%/ProgramData"
+  },
+  "os": { "platform": "win32", "release": "10.0.19045", "arch": "x64" },
+  "npmRoot": "%FIXTURE_HOME%/AppData/Roaming/npm/node_modules",
+  "capabilities": {
+    "processes": true,
+    "services": true,
+    "servicesState": true,
+    "scheduledTasks": true,
+    "autostart": true,
+    "launchd": false
+  },
+  "processes": [
+    {
+      "name": "codex.exe",
+      "pid": 4242,
+      "path": "%FIXTURE_HOME%/AppData/Local/OpenAI/Codex/bin/896a0166b774037a/codex.exe"
+    }
+  ],
+  "services": [
+    {
+      "name": "CodexSandboxService.OpenAI.Codex",
+      "displayName": "Codex Sandbox Service",
+      "startType": "auto",
+      "state": "running",
+      "imagePath": "%FIXTURE_HOME%/Program Files/WindowsApps/OpenAI.Codex_26.1013.4894.0_x64__2p2nqsd0c76g0/app/resources/codex-windows-sandbox-service.exe",
+      "objectName": "LocalSystem"
+    }
+  ],
+  "tasks": [],
+  "autostart": [],
+  "launchDaemons": []
+}

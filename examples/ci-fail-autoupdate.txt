@@ -1,0 +1,42 @@
+enchanted-agent-audit v0.1.0
+host: linux 6.8.0-fixture x64  |  generated: 2026-10-18T14:12:48.942Z
+platform capability: processes=yes services=yes tasks=yes autostart=yes
+
+Agent                Installed Daemon          Auto-update  Decoupled  Tel.
+-------------------- --------- --------------- ------------ ---------- ----
+Codex CLI            no        none            enabled*     yes*       -   
+Claude Code          no        none            enabled*     unknown    -   
+GitHub Copilot CLI   no        none            unknown      unknown    -   
+OpenCode             yes       none            enabled      unknown    -   
+legend: yes/no = observed on this host; * = vendor-documented default, not measured; ~ = inferred from observed files/processes; unknown = not statically established.
+
+[Codex CLI] not detected on this machine.
+
+[Claude Code] not detected on this machine.
+
+[GitHub Copilot CLI] not detected on this machine.
+
+[OpenCode] OpenCode (anomalyco) - https://github.com/anomalyco/opencode
+  installed: true (installed); detection: process, dir
+  persistent daemon: no [observed/service-enum] - enumeration succeeded and no matching persistent entry was found
+  auto-update: enabled [observed/file-read] - explicit auto-update setting read from a config file; whether it takes effect at runtime is not verified
+  version decoupled from package manager: unknown [unknown] - no package-manager install was observed, so decoupling could not be measured
+    - install: C:\Users\IsaacHuo\AppData\Local\Programs\@opencode-aidesktop (sideloaded)
+    - install: C:\Users\IsaacHuo\AppData\Roaming\ai.opencode.desktop (sideloaded)
+    - install: C:\Users\IsaacHuo\AppData\Roaming\ai.opencode.desktop\cli\2.0.32-x64 (sideloaded, v2.0.32-x64)
+    - config: ~\.config\opencode\opencode.json#autoupdate = true
+    documented update switches (effect not verified):
+      - autoupdate: false (config)
+      - autoupdate: "notify" (config)
+  telemetry endpoints: 0 (no traffic capture)
+  telemetry-looking hosts found in config files (static text match, not traffic):
+    - https://telemetry.example.test/ingest [observed/file-read]
+  known dangerous defaults (documented):
+    - autoupdate-env-bypass: Setting autoupdate via OPENCODE_CONFIG / OPENCODE_CONFIG_DIR is ignored, so a config that looks pinned can still auto-upgrade.
+      source: https://github.com/anomalyco/opencode/issues/21083
+  limitations:
+      - opencode may run several differently-versioned installs side by side; each is reported separately.
+
+CI: FAIL (1 reason(s))
+  - opencode: background-auto-update ["~\\.config\\opencode\\opencode.json#autoupdate"]
+exit code: 1

@@ -1,0 +1,19 @@
+{
+  "name": "enumeration-unavailable",
+  "home": "./home",
+  "os": { "platform": "win32", "release": "10.0.19045", "arch": "x64" },
+  "npmRoot": null,
+  "capabilities": {
+    "processes": false,
+    "services": false,
+    "servicesState": false,
+    "scheduledTasks": false,
+    "autostart": false,
+    "launchd": false
+  },
+  "processes": [],
+  "services": [],
+  "tasks": [],
+  "autostart": [],
+  "launchDaemons": []
+}

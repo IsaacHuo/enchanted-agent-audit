@@ -1,0 +1,24 @@
+{
+  "name": "codex-adjacent-update-key",
+  "home": "./home",
+  "env": {
+    "LOCALAPPDATA": "%FIXTURE_HOME%/AppData/Local",
+    "APPDATA": "%FIXTURE_HOME%/AppData/Roaming",
+    "PROGRAMDATA": "%FIXTURE_HOME%/ProgramData"
+  },
+  "os": { "platform": "win32", "release": "10.0.19045", "arch": "x64" },
+  "npmRoot": "%FIXTURE_HOME%/AppData/Roaming/npm/node_modules",
+  "capabilities": {
+    "processes": true,
+    "services": true,
+    "servicesState": true,
+    "scheduledTasks": true,
+    "autostart": true,
+    "launchd": false
+  },
+  "processes": [],
+  "services": [],
+  "tasks": [],
+  "autostart": [],
+  "launchDaemons": []
+}

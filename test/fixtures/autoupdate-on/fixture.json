@@ -1,0 +1,25 @@
+{
+  "name": "opencode-autoupdate-enabled",
+  "home": "./home",
+  "os": { "platform": "linux", "release": "6.8.0-fixture", "arch": "x64" },
+  "npmRoot": "/usr/lib/node_modules",
+  "capabilities": {
+    "processes": true,
+    "services": true,
+    "servicesState": true,
+    "scheduledTasks": true,
+    "autostart": true,
+    "launchd": false
+  },
+  "processes": [
+    {
+      "name": "opencode",
+      "pid": 5151,
+      "path": "/usr/lib/node_modules/@opencode/cli/bin/opencode"
+    }
+  ],
+  "services": [],
+  "tasks": [],
+  "autostart": [],
+  "launchDaemons": []
+}

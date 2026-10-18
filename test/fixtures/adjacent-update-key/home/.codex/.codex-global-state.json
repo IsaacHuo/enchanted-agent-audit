@@ -1,0 +1,4 @@
+{
+  "electron-internal-update-cdn-enabled": false,
+  "primary-runtime-update-jitter-ms": 30000
+}

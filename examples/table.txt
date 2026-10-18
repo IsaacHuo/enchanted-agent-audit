@@ -1,0 +1,38 @@
+enchanted-agent-audit v0.1.0
+host: win32 10.0.19045 x64  |  generated: 2026-10-18T14:12:48.330Z
+platform capability: processes=yes services=yes tasks=yes autostart=yes
+
+Agent                Installed Daemon          Auto-update  Decoupled  Tel.
+-------------------- --------- --------------- ------------ ---------- ----
+Codex CLI            yes       1 auto-start    enabled*     yes*       -   
+Claude Code          no        none            enabled*     unknown    -   
+GitHub Copilot CLI   no        none            unknown      unknown    -   
+OpenCode             no        none            enabled*     unknown    -   
+legend: yes/no = observed on this host; * = vendor-documented default, not measured; ~ = inferred from observed files/processes; unknown = not statically established.
+
+[Codex CLI] OpenAI - https://github.com/openai/codex
+  installed: true (installed); detection: process, dir, service
+  persistent daemon: yes [observed/registry-read] - persistent auto-start or scheduled entry matched this agent
+    - windows-service: CodexSandboxService.OpenAI.Codex (start=auto, state=running) [observed/registry-read]
+        ~\Program Files\WindowsApps\OpenAI.Codex_26.1013.4894.0_x64__2p2nqsd0c76g0\app\resources\codex-windows-sandbox-service.exe
+  auto-update: enabled [documented/external-doc] - vendor default; no explicit local override found in readable config
+  version decoupled from package manager: yes [documented] - The platform package (~374MB) is copied into ~/.codex/packages and the backend runs from that copy, decoupled from the package manager.
+    - install: ~\AppData\Local\OpenAI\Codex (sideloaded)
+    - install: ~\AppData\Local\OpenAI\Codex\bin\896a0166b774037a (sideloaded)
+  telemetry endpoints: 0 (no traffic capture)
+  known dangerous defaults (documented):
+    - daemon-inherits-first-session-env: The daemon pins the first session's proxy/environment variables, so later sessions silently inherit the wrong network configuration.
+      source: https://github.com/openai/codex/issues/48195
+    - self-upgrading-package-copy: The backend runs from a user-directory copy that upgrades itself, so the running version drifts from the package-manager version.
+      source: https://github.com/openai/codex/issues/48195
+  limitations:
+      - Full Windows service enumeration needs elevation; this tool reads START type from the registry and queries only matched services by name, so live state is available for matched services but an unreadable service is reported unknown.
+
+[Claude Code] not detected on this machine.
+
+[GitHub Copilot CLI] not detected on this machine.
+
+[OpenCode] not detected on this machine.
+
+CI: FAIL (1 reason(s))
+  - codex: persistent-daemon ["windows-service:CodexSandboxService.OpenAI.Codex"]

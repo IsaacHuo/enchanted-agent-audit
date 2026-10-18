@@ -1,0 +1,45 @@
+{
+  "name": "enchanted-agent-audit",
+  "version": "0.1.0",
+  "description": "Read-only audit of what coding-agent CLIs install and run on your machine: persistent daemons/services, auto-update and version decoupling, telemetry endpoints and effective disable switches, and known dangerous defaults.",
+  "keywords": [
+    "audit",
+    "coding-agent",
+    "codex",
+    "claude-code",
+    "copilot-cli",
+    "opencode",
+    "telemetry",
+    "daemon",
+    "auto-update",
+    "read-only",
+    "security"
+  ],
+  "license": "MIT",
+  "author": "Enchanted",
+  "private": false,
+  "type": "commonjs",
+  "bin": {
+    "enchanted-agent-audit": "bin/enchanted-agent-audit.js"
+  },
+  "main": "src/main.js",
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "examples",
+    "scripts",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.13"
+  },
+  "scripts": {
+    "test": "node --test",
+    "audit": "node bin/enchanted-agent-audit.js",
+    "examples": "node scripts/gen-examples.js",
+    "readonly-proof": "node scripts/readonly-proof.js"
+  }
+}

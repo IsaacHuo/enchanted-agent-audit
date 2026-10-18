@@ -1,0 +1,70 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            node: 20
+          - os: ubuntu-latest
+            node: 22
+          - os: ubuntu-latest
+            node: 24
+          - os: windows-latest
+            node: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Unit and fixture tests
+        run: node --test
+      - name: Gate self-test (must fail on persistent daemon)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set +e
+          node bin/enchanted-agent-audit.js --fixture test/fixtures/codex-daemon/fixture.json --ci
+          code=$?
+          if [ "$code" -ne 1 ]; then
+            echo "expected exit code 1, got $code"
+            exit 1
+          fi
+      - name: Gate self-test (must fail on enabled auto-update)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set +e
+          node bin/enchanted-agent-audit.js --fixture test/fixtures/autoupdate-on/fixture.json --ci
+          code=$?
+          if [ "$code" -ne 1 ]; then
+            echo "expected exit code 1, got $code"
+            exit 1
+          fi
+      - name: Gate self-test (must pass when auto-update is off)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set +e
+          node bin/enchanted-agent-audit.js --fixture test/fixtures/autoupdate-off/fixture.json --ci
+          code=$?
+          if [ "$code" -ne 0 ]; then
+            echo "expected exit code 0, got $code"
+            exit 1
+          fi
+      - name: JSON report is valid
+        shell: bash
+        run: |
+          node bin/enchanted-agent-audit.js --fixture test/fixtures/codex-daemon/fixture.json --json > report.json
+          node -e "const r=require('./report.json');if(r.schema!=='enchanted.agent-audit/v1')process.exit(1)"
