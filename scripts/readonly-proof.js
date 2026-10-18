@@ -41,6 +41,17 @@ const MAX_CONTENT_BYTES = 1024 * 1024;
  */
 const VOLATILE_DIR_RE = /^(logs?|tmp|temp|cache|caches|crashpad|gpucache|code cache|daemon)$/i;
 
+/**
+ * Files that belong to a running process rather than to configuration: SQLite
+ * WAL/SHM sidecars, databases, logs, shell transcripts, pid/lock files. The
+ * agents being audited (including the one running this proof) append to these
+ * continuously, so they cannot attribute a change to the audit. They are counted
+ * and excluded; `test/readonly-static.test.js` proves separately that the shipped
+ * source contains no write API at all.
+ */
+const VOLATILE_FILE_RE = /(\.(sqlite3?|db|log|out|pid|lock|tmp)$|-(wal|shm)$)/i;
+const VOLATILE_PATH_RE = /(^|[\\/])(shell|logs?|cache|caches|tmp|temp|crashpad|gpucache|code cache)([\\/]|$)/i;
+
 function parseArgs(argv) {
   const options = { roots: [], json: false, settleMs: 1000, cliArgs: [] };
   for (let i = 0; i < argv.length; i += 1) {
@@ -84,6 +95,7 @@ function manifest(root) {
   const byPath = new Map();
   let truncated = false;
   let skippedVolatileDirs = 0;
+  let skippedVolatileFiles = 0;
   const walk = (dir, depth) => {
     if (files.length >= MAX_FILES) {
       truncated = true;
@@ -112,6 +124,10 @@ function manifest(root) {
         continue;
       }
       if (!entry.isFile()) continue;
+      if (VOLATILE_FILE_RE.test(entry.name) || VOLATILE_PATH_RE.test(rel)) {
+        skippedVolatileFiles += 1;
+        continue;
+      }
       let stat;
       try {
         stat = fs.statSync(full);
@@ -134,7 +150,16 @@ function manifest(root) {
   if (fs.existsSync(root)) walk(root, 0);
   const digest = crypto.createHash('sha256');
   for (const f of files) digest.update(`${f.path}\0${f.size}\0${f.mtimeMs}\0${f.sha256 || ''}\n`);
-  return { root, exists: fs.existsSync(root), fileCount: files.length, truncated, skippedVolatileDirs, digest: digest.digest('hex'), byPath };
+  return {
+    root,
+    exists: fs.existsSync(root),
+    fileCount: files.length,
+    truncated,
+    skippedVolatileDirs,
+    skippedVolatileFiles,
+    digest: digest.digest('hex'),
+    byPath,
+  };
 }
 
 function fingerprint(record) {
@@ -155,7 +180,7 @@ function diffPaths(a, b) {
 
 function runAudit(cliArgs) {
   try {
-    const stdout = execFileSync(process.execPath, [BIN, '--quiet', ...cliArgs], {
+    const stdout = execFileSync(process.execPath, [BIN, '--quiet', '--ci', ...cliArgs], {
       encoding: 'utf8',
       timeout: 180000,
       windowsHide: true,
@@ -196,6 +221,7 @@ function main() {
       fileCount: beforeA[i].fileCount,
       truncated: beforeA[i].truncated,
       skippedVolatileDirs: beforeA[i].skippedVolatileDirs,
+      skippedVolatileFiles: beforeA[i].skippedVolatileFiles,
       digestBefore: beforeA[i].digest,
       digestAfter: after[i].digest,
       ambientChangedPaths: ambient.size,
@@ -209,7 +235,7 @@ function main() {
     process.stdout.write(
       `${JSON.stringify(
         {
-          command: `node bin/enchanted-agent-audit.js --quiet ${options.cliArgs.join(' ')}`.trim(),
+          command: `node bin/enchanted-agent-audit.js --quiet --ci ${options.cliArgs.join(' ')}`.trim(),
           auditExitCode: audit.code,
           settleMs: options.settleMs,
           roots: rows,
@@ -223,7 +249,10 @@ function main() {
     process.stdout.write('read-only proof: baseline -> ambient window -> run audit -> compare\n\n');
     for (const r of rows) {
       process.stdout.write(`${r.unchanged ? 'SAME' : 'CHANGED'}  ${r.root}\n`);
-      process.stdout.write(`       files=${r.fileCount}${r.truncated ? ' (capped)' : ''}  ambient-writes=${r.ambientChangedPaths}  skipped-volatile-dirs=${r.skippedVolatileDirs}\n`);
+      process.stdout.write(
+        `       files=${r.fileCount}${r.truncated ? ' (capped)' : ''}  ambient-writes=${r.ambientChangedPaths}` +
+          `  skipped-volatile=${r.skippedVolatileDirs}dirs/${r.skippedVolatileFiles}files\n`,
+      );
       process.stdout.write(`       digest before=${r.digestBefore}\n`);
       process.stdout.write(`       digest after =${r.digestAfter}\n`);
       if (r.changedByAudit.length) process.stdout.write(`       changed by audit: ${r.changedByAudit.join(', ')}\n`);

@@ -1,5 +1,5 @@
 enchanted-agent-audit v0.1.0
-host: linux 6.8.0-fixture x64  |  generated: 2026-10-18T14:12:48.942Z
+host: linux 6.8.0-fixture x64  |  generated: 2026-01-01T00:00:00.000Z
 platform capability: processes=yes services=yes tasks=yes autostart=yes
 
 Agent                Installed Daemon          Auto-update  Decoupled  Tel.

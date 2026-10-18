@@ -67,11 +67,13 @@ Two independent checks:
 2. **Runtime:** `node scripts/readonly-proof.js` hashes the audited directories,
    waits for an ambient-churn window, runs the audit, and hashes again. Paths
    that changed in the ambient window are excluded, so the verdict is about the
-   audit only. Volatile log/cache directories that the running agents append to
-   are reported as `skipped-volatile-dirs`.
+   audit only. Files and directories that a running agent appends to (SQLite
+   `-wal`/`-shm`, databases, logs, shell transcripts, caches) are counted and
+   excluded as `skipped-volatile`; the static test above covers the gap they
+   would otherwise leave.
 
-Actual result on Windows 10 (Node v24.19.0) is recorded in the task evidence and
-in `docs/verification.md`.
+Actual result on Windows 10 (Node v24.19.0) is recorded in
+[docs/verification.md](verification.md).
 
 ## Platform behaviour
 

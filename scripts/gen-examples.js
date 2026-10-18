@@ -28,8 +28,13 @@ function fixture(name) {
   return path.join(ROOT, 'test', 'fixtures', name, 'fixture.json');
 }
 
+/** Freeze generated timestamps so regenerating examples produces no diff. */
+function normalize(text) {
+  return text.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/g, '2026-01-01T00:00:00.000Z');
+}
+
 function write(name, text) {
-  const body = text.endsWith('\n') ? text : `${text}\n`;
+  const body = normalize(text.endsWith('\n') ? text : `${text}\n`);
   fs.writeFileSync(path.join(EXAMPLES, name), body, 'utf8');
   process.stdout.write(`wrote examples/${name} (${body.length} bytes)\n`);
 }

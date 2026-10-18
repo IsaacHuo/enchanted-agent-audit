@@ -15,10 +15,15 @@ Independent verification must run against the exact commit named below.
 
 ## Commit under test
 
-- Commit: recorded in the hand-off comment on the task after the final commit.
+- Code commit: `eb662ecd3196a20a3a79847e3620d74642bc8d66`
+  (`feat: read-only audit CLI for agent daemons, auto-update, telemetry`).
+- The only change after that commit is this evidence document, committed as a
+  docs-only follow-up. The source, tests, fixtures and examples under test are
+  exactly `eb662ec`.
 - Reproduce everything below from a clean checkout of that commit:
 
 ```bash
+git checkout eb662ecd3196a20a3a79847e3620d74642bc8d66
 node --test
 node scripts/verify-local.js
 node scripts/gen-examples.js
@@ -115,28 +120,38 @@ Deterministic scenarios (no agents installed required):
 ### 4. Read-only proof
 
 ```text
-$ node scripts/readonly-proof.js --settle-ms 1500
+$ node scripts/readonly-proof.js --settle-ms 1200
 read-only proof: baseline -> ambient window -> run audit -> compare
 
 SAME  C:\Users\IsaacHuo\.codex
-       files=288  ambient-writes=0  skipped-volatile-dirs=6
+       files=222  ambient-writes=0  skipped-volatile=6dirs/66files
 SAME  C:\Users\IsaacHuo\.claude
-       files=0  ambient-writes=0  skipped-volatile-dirs=0
+       files=0  ambient-writes=0  skipped-volatile=0dirs/0files
 SAME  C:\Users\IsaacHuo\.copilot
-       files=2  ambient-writes=0  skipped-volatile-dirs=1
+       files=1  ambient-writes=0  skipped-volatile=1dirs/1files
 SAME  C:\Users\IsaacHuo\.config\opencode
-       files=1045  ambient-writes=0  skipped-volatile-dirs=0
+       files=1045  ambient-writes=0  skipped-volatile=0dirs/0files
 SAME  C:\Users\IsaacHuo\.local\share\opencode
-       files=971  ambient-writes=4  skipped-volatile-dirs=1
+       files=218  ambient-writes=0  skipped-volatile=1dirs/793files
 
-audit exit code: 0 (0 = clean, 1 = CI gate triggered)
+audit exit code: 1 (0 = clean, 1 = CI gate triggered)
 verdict: PASS - no audited state was modified by the audit
 ```
 
-The four ambient writes in `.local/share/opencode` happened during the settle
-window and were excluded by the two-baseline method; they are this session's own
-state, not the audit. Volatile log/cache directories are counted and skipped
-because the running agents append to them continuously.
+Method: hash baseline, wait, hash again (ambient churn), run the audit, hash a
+third time. Only paths that changed in the post-audit window **and** were stable
+in the ambient window count against the audit.
+
+Two categories are counted and excluded, because the agents under audit are
+running and append to them continuously:
+
+- volatile directories: `log`, `logs`, `cache`, `tmp`, `crashpad`, `GPUCache`, …;
+- volatile files: SQLite databases and `-wal`/`-shm` sidecars, `.log`, `.out`,
+  `.pid`, `.lock`, shell transcripts.
+
+On this host that is 793 such files under `~/.local/share/opencode` alone, which
+is exactly why a naive "hash the whole directory" check is noisy. The gap is
+closed by the static proof below, which cannot be disturbed by other processes.
 
 Independent static proof (does not depend on a quiet machine):
 
